@@ -101,7 +101,7 @@ public class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet
     }
     }
     
-    internal override func calcMinMax(start start : Int, end: Int)
+    public override func calcMinMax(start start : Int, end: Int)
     {
         let yValCount = _yVals.count
         

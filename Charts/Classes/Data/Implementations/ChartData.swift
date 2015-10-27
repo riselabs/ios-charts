@@ -744,12 +744,9 @@ public class ChartData: NSObject
         {
             let set = _dataSets[i]
             
-            for (var j = 0; j < set.entryCount; j++)
+            if (e === set.entryForXIndex(e.xIndex))
             {
-                if (e === set.entryForXIndex(e.xIndex))
-                {
-                    return set
-                }
+                return set
             }
         }
         

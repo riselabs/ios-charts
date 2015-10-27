@@ -28,7 +28,7 @@ public class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet
         super.setColor(color.colorWithAlphaComponent(alpha))
     }
     
-    internal override func calcMinMax(start start: Int, end: Int)
+    public override func calcMinMax(start start: Int, end: Int)
     {
         if (yVals.count == 0)
         {
