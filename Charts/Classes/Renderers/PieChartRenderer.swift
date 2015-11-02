@@ -46,7 +46,7 @@ public class PieChartRenderer: ChartDataRendererBase
             
             if (pieData != nil)
             {
-                for set in pieData!.dataSets as! [PieChartDataSet]
+                for set in pieData!.dataSets as! [IPieChartDataSet]
                 {
                     if set.isVisible && set.entryCount > 0
                     {
@@ -57,7 +57,7 @@ public class PieChartRenderer: ChartDataRendererBase
         }
     }
     
-    internal func drawDataSet(context context: CGContext, dataSet: PieChartDataSet)
+    internal func drawDataSet(context context: CGContext, dataSet: IPieChartDataSet)
     {
         var angle = _chart.rotationAngle
         
@@ -147,7 +147,7 @@ public class PieChartRenderer: ChartDataRendererBase
         
         for (var i = 0; i < dataSets.count; i++)
         {
-            guard let dataSet = dataSets[i] as? PieChartDataSet else { continue }
+            guard let dataSet = dataSets[i] as? IPieChartDataSet else { continue }
             
             let drawYVals = dataSet.isDrawValuesEnabled
             
@@ -312,7 +312,7 @@ public class PieChartRenderer: ChartDataRendererBase
                 continue
             }
             
-            guard let set = _chart.data?.getDataSetByIndex(indices[i].dataSetIndex) as? PieChartDataSet else { continue }
+            guard let set = _chart.data?.getDataSetByIndex(indices[i].dataSetIndex) as? IPieChartDataSet else { continue }
             
             if !set.isHighlightEnabled
             {

@@ -15,7 +15,7 @@
 import Foundation
 import UIKit
 
-public class RadarChartDataSet: LineRadarChartDataSet
+public class RadarChartDataSet: LineRadarChartDataSet, IRadarChartDataSet
 {
     public required init()
     {

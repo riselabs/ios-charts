@@ -15,34 +15,35 @@
 import Foundation
 import UIKit
 
-public class ChartDataSet: ChartDataSetBase
+public class ChartDataSet: NSObject, IChartDataSet
 {
-    internal var _yVals: [ChartDataEntry]!
-    internal var _yMax = Double(0.0)
-    internal var _yMin = Double(0.0)
-    internal var _yValueSum = Double(0.0)
-    
-    /// the last start value used for calcMinMax
-    internal var _lastStart: Int = 0
-    
-    /// the last end value used for calcMinMax
-    internal var _lastEnd: Int = 0
-
-    public var yVals: [ChartDataEntry] { return _yVals }
-    public var yValueSum: Double { return _yValueSum }
-    public var yMin: Double { return _yMin }
-    public var yMax: Double { return _yMax }
-    
-    public required init()
+    public required override init()
     {
         super.init()
+        
+        // default color
+        colors.append(UIColor(red: 140.0/255.0, green: 234.0/255.0, blue: 255.0/255.0, alpha: 1.0))
+    }
+    
+    public init(label: String?)
+    {
+        super.init()
+        
+        // default color
+        colors.append(UIColor(red: 140.0/255.0, green: 234.0/255.0, blue: 255.0/255.0, alpha: 1.0))
+        
+        self.label = label
     }
     
     public init(yVals: [ChartDataEntry]?, label: String?)
     {
         super.init()
         
+        // default color
+        colors.append(UIColor(red: 140.0/255.0, green: 234.0/255.0, blue: 255.0/255.0, alpha: 1.0))
+        
         self.label = label
+        
         _yVals = yVals == nil ? [ChartDataEntry]() : yVals
         
         self.calcMinMax(start: _lastStart, end: _lastEnd)
@@ -54,14 +55,30 @@ public class ChartDataSet: ChartDataSetBase
         self.init(yVals: yVals, label: "DataSet")
     }
     
+    // MARK: - Data functions and accessors
+    
+    internal var _yVals: [ChartDataEntry]!
+    internal var _yMax = Double(0.0)
+    internal var _yMin = Double(0.0)
+    internal var _yValueSum = Double(0.0)
+    
+    /// the last start value used for calcMinMax
+    internal var _lastStart: Int = 0
+    
+    /// the last end value used for calcMinMax
+    internal var _lastEnd: Int = 0
+    
+    public var yVals: [ChartDataEntry] { return _yVals }
+    public var yValueSum: Double { return _yValueSum }
+    
     /// Use this method to tell the data set that the underlying data has changed
-    public override func notifyDataSetChanged()
+    public func notifyDataSetChanged()
     {
         calcMinMax(start: _lastStart, end: _lastEnd)
         calcYValueSum()
     }
     
-    public override func calcMinMax(start start : Int, end: Int)
+    public func calcMinMax(start start: Int, end: Int)
     {
         let yValCount = _yVals.count
         
@@ -122,14 +139,22 @@ public class ChartDataSet: ChartDataSetBase
     }
     
     /// - returns: the average value across all entries in this DataSet.
-    public override var average: Double
+    public var average: Double
     {
         return yValueSum / Double(valueCount)
     }
     
-    public override var entryCount: Int { return _yVals!.count }
+    /// - returns: the minimum y-value this DataSet holds
+    public var yMin: Double { return _yMin }
     
-    public override func yValForXIndex(x: Int) -> Double
+    /// - returns: the maximum y-value this DataSet holds
+    public var yMax: Double { return _yMax }
+    
+    /// - returns: the number of y-values this DataSet represents
+    public var entryCount: Int { return _yVals!.count }
+    
+    /// - returns: the value of the Entry object at the given xIndex. Returns NaN if no value is at the given x-index.
+    public func yValForXIndex(x: Int) -> Double
     {
         let e = self.entryForXIndex(x)
         
@@ -137,12 +162,18 @@ public class ChartDataSet: ChartDataSetBase
         else { return Double.NaN }
     }
     
-    public override func entryForIndex(i: Int) -> ChartDataEntry?
+    /// - returns: the entry object found at the given index (not x-index!)
+    /// - throws: out of bounds
+    /// if `i` is out of bounds, it may throw an out-of-bounds exception
+    public func entryForIndex(i: Int) -> ChartDataEntry?
     {
         return _yVals[i]
     }
     
-    public override func entryForXIndex(x: Int) -> ChartDataEntry?
+    /// - returns: the first Entry object found at the given xIndex with binary search.
+    /// If the no Entry at the specifed x-index is found, this method returns the Entry at the closest x-index.
+    /// nil if no Entry object at that index.
+    public func entryForXIndex(x: Int) -> ChartDataEntry?
     {
         let index = self.entryIndex(xIndex: x)
         if (index > -1)
@@ -199,7 +230,10 @@ public class ChartDataSet: ChartDataSetBase
         return entries
     }
     
-    public override func entryIndex(xIndex x: Int) -> Int
+    /// - returns: the array-index of the specified entry
+    ///
+    /// - parameter x: x-index of the entry to search for
+    public func entryIndex(xIndex x: Int) -> Int
     {
         var low = 0
         var high = _yVals.count - 1
@@ -235,33 +269,24 @@ public class ChartDataSet: ChartDataSetBase
         return closest
     }
     
-    public override func entryIndex(entry e: ChartDataEntry, isEqual: Bool) -> Int
+    /// - returns: the array-index of the specified entry
+    ///
+    /// - parameter e: the entry to search for
+    public func entryIndex(entry e: ChartDataEntry) -> Int
     {
-        if (isEqual)
+        for (var i = 0; i < _yVals.count; i++)
         {
-            for (var i = 0; i < _yVals.count; i++)
+            if (_yVals[i] === e || _yVals[i].isEqual(e))
             {
-                if (_yVals[i].isEqual(e))
-                {
-                    return i
-                }
-            }
-        }
-        else
-        {
-            for (var i = 0; i < _yVals.count; i++)
-            {
-                if (_yVals[i] === e)
-                {
-                    return i
-                }
+                return i
             }
         }
         
         return -1
     }
     
-    public override var valueCount: Int { return _yVals.count }
+    /// - returns: the number of entries this DataSet holds.
+    public var valueCount: Int { return _yVals.count }
     
     /// Adds an Entry to the DataSet dynamically.
     /// Entries are added to the end of the list.
@@ -448,20 +473,132 @@ public class ChartDataSet: ChartDataSetBase
         _lastEnd = 0
         notifyDataSetChanged()
     }
-
-    // MARK: NSCopying
     
-    public override func copyWithZone(zone: NSZone) -> AnyObject
+    // MARK: - Styling functions and accessors
+    
+    /// The label string that describes the DataSet.
+    public var label: String? = "DataSet"
+    
+    /// The axis this DataSet should be plotted against.
+    public var axisDependency = ChartYAxis.AxisDependency.Left
+    
+    /// All the colors that are set for this DataSet
+    public var colors = [UIColor]()
+    
+    /// - returns: the color at the given index of the DataSet's color array.
+    /// This prevents out-of-bounds by performing a modulus on the color index, so colours will repeat themselves.
+    public func colorAt(var index: Int) -> UIColor
     {
-        let copy = super.copyWithZone(zone) as! ChartDataSet
+        if (index < 0)
+        {
+            index = 0
+        }
+        return colors[index % colors.count]
+    }
+    
+    public func resetColors()
+    {
+        colors.removeAll(keepCapacity: false)
+    }
+    
+    public func addColor(color: UIColor)
+    {
+        colors.append(color)
+    }
+    
+    public func setColor(color: UIColor)
+    {
+        colors.removeAll(keepCapacity: false)
+        colors.append(color)
+    }
+    
+    /// if true, value highlighting is enabled
+    public var highlightEnabled = true
+    
+    /// - returns: true if value highlighting is enabled for this dataset
+    public var isHighlightEnabled: Bool { return highlightEnabled }
+    
+    /// the formatter used to customly format the values
+    internal var _valueFormatter: NSNumberFormatter? = ChartUtils.defaultValueFormatter()
+    
+    /// The formatter used to customly format the values
+    public var valueFormatter: NSNumberFormatter?
+    {
+        get
+        {
+            return _valueFormatter
+        }
+        set
+        {
+            if newValue == nil
+            {
+                _valueFormatter = ChartUtils.defaultValueFormatter()
+            }
+            else
+            {
+                _valueFormatter = newValue
+            }
+        }
+    }
+    
+    /// the color used for the value-text
+    public var valueTextColor: UIColor = UIColor.blackColor()
+    
+    /// the font for the value-text labels
+    public var valueFont: UIFont = UIFont.systemFontOfSize(7.0)
+    
+    /// Set this to true to draw y-values on the chart
+    public var drawValuesEnabled = true
+    
+    /// Returns true if y-value drawing is enabled, false if not
+    public var isDrawValuesEnabled: Bool
+    {
+        return drawValuesEnabled
+    }
+    
+    /// Set the visibility of this DataSet. If not visible, the DataSet will not be drawn to the chart upon refreshing it.
+    public var visible = true
+    
+    /// Returns true if this DataSet is visible inside the chart, or false if it is currently hidden.
+    public var isVisible: Bool
+    {
+        return visible
+    }
+
+    // MARK: - NSObject
+    
+    public override var description: String
+    {
+        return String(format: "%@, label: %@, %i entries", arguments: [NSStringFromClass(self.dynamicType), self.label ?? "", self.entryCount])
+    }
+    
+    public override var debugDescription: String
+    {
+        var desc = description + ":"
         
+        for (var i = 0, count = self.entryCount; i < count; i++)
+        {
+            desc += "\n" + (self.entryForIndex(i)?.description ?? "")
+        }
+        
+        return desc
+    }
+    
+    // MARK: - NSCopying
+    
+    public func copyWithZone(zone: NSZone) -> AnyObject
+    {
+        let copy = self.dynamicType.init()
+        
+        copy.colors = colors
         copy._yVals = _yVals
         copy._yMax = _yMax
         copy._yMin = _yMin
         copy._yValueSum = _yValueSum
         copy._lastStart = _lastStart
         copy._lastEnd = _lastEnd
-        
+        copy.label = label
+
         return copy
     }
 }

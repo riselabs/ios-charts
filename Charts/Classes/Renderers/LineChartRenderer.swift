@@ -36,7 +36,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
             
             if set.isVisible
             {
-                drawDataSet(context: context, dataSet: set as! LineChartDataSet)
+                drawDataSet(context: context, dataSet: set as! ILineChartDataSet)
             }
         }
     }
@@ -58,7 +58,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
         }
     }
     
-    internal func drawDataSet(context context: CGContext, dataSet: LineChartDataSet)
+    internal func drawDataSet(context context: CGContext, dataSet: ILineChartDataSet)
     {
         let entries = dataSet.yVals
         
@@ -72,7 +72,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
         CGContextSetLineWidth(context, dataSet.lineWidth)
         if (dataSet.lineDashLengths != nil)
         {
-            CGContextSetLineDash(context, dataSet.lineDashPhase, dataSet.lineDashLengths, dataSet.lineDashLengths.count)
+            CGContextSetLineDash(context, dataSet.lineDashPhase, dataSet.lineDashLengths!, dataSet.lineDashLengths!.count)
         }
         else
         {
@@ -92,7 +92,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
         CGContextRestoreGState(context)
     }
     
-    internal func drawCubic(context context: CGContext, dataSet: LineChartDataSet, entries: [ChartDataEntry])
+    internal func drawCubic(context context: CGContext, dataSet: ILineChartDataSet, entries: [ChartDataEntry])
     {
         let trans = dataProvider?.getTransformer(dataSet.axisDependency)
         
@@ -100,8 +100,8 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
         let entryTo = dataSet.entryForXIndex(_maxX)!
         
         let diff = (entryFrom == entryTo) ? 1 : 0
-        let minx = max(dataSet.entryIndex(entry: entryFrom, isEqual: true) - diff, 0)
-        let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo, isEqual: true) + 1), entries.count)
+        let minx = max(dataSet.entryIndex(entry: entryFrom) - diff, 0)
+        let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo) + 1), entries.count)
         
         let phaseX = _animator.phaseX
         let phaseY = _animator.phaseY
@@ -196,7 +196,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
         CGContextRestoreGState(context)
     }
     
-    internal func drawCubicFill(context context: CGContext, dataSet: LineChartDataSet, spline: CGMutablePath, matrix: CGAffineTransform, from: Int, to: Int)
+    internal func drawCubicFill(context context: CGContext, dataSet: ILineChartDataSet, spline: CGMutablePath, matrix: CGAffineTransform, from: Int, to: Int)
     {
         guard let dataProvider = dataProvider else { return }
         
@@ -229,7 +229,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
     
     private var _lineSegments = [CGPoint](count: 2, repeatedValue: CGPoint())
     
-    internal func drawLinear(context context: CGContext, dataSet: LineChartDataSet, entries: [ChartDataEntry])
+    internal func drawLinear(context context: CGContext, dataSet: ILineChartDataSet, entries: [ChartDataEntry])
     {
         guard let trans = dataProvider?.getTransformer(dataSet.axisDependency) else { return }
         let valueToPixelMatrix = trans.valueToPixelMatrix
@@ -243,8 +243,8 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
         let entryTo = dataSet.entryForXIndex(_maxX)!
         
         let diff = (entryFrom == entryTo) ? 1 : 0
-        let minx = max(dataSet.entryIndex(entry: entryFrom, isEqual: true) - diff, 0)
-        let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo, isEqual: true) + 1), entries.count)
+        let minx = max(dataSet.entryIndex(entry: entryFrom) - diff, 0)
+        let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo) + 1), entries.count)
         
         // more than 1 color
         if (dataSet.colors.count > 1)
@@ -335,7 +335,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
         }
     }
     
-    internal func drawLinearFill(context context: CGContext, dataSet: LineChartDataSet, entries: [ChartDataEntry], minx: Int, maxx: Int, trans: ChartTransformer)
+    internal func drawLinearFill(context context: CGContext, dataSet: ILineChartDataSet, entries: [ChartDataEntry], minx: Int, maxx: Int, trans: ChartTransformer)
     {
         guard let dataProvider = dataProvider else { return }
         
@@ -394,7 +394,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
             
             for (var i = 0; i < dataSets.count; i++)
             {
-                guard let dataSet = dataSets[i] as? LineChartDataSet else { continue }
+                guard let dataSet = dataSets[i] as? ILineChartDataSet else { continue }
                 
                 if !dataSet.isDrawValuesEnabled || dataSet.entryCount == 0
                 {
@@ -422,8 +422,8 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
                 let entryTo = dataSet.entryForXIndex(_maxX)!
                 
                 let diff = (entryFrom == entryTo) ? 1 : 0
-                let minx = max(dataSet.entryIndex(entry: entryFrom, isEqual: true) - diff, 0)
-                let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo, isEqual: true) + 1), entries.count)
+                let minx = max(dataSet.entryIndex(entry: entryFrom) - diff, 0)
+                let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo) + 1), entries.count)
                 
                 var positions = trans.generateTransformedValuesLine(
                     entries,
@@ -473,7 +473,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
         
         for (var i = 0, count = dataSets.count; i < count; i++)
         {
-            let dataSet = lineData.getDataSetByIndex(i) as! LineChartDataSet!
+            let dataSet = lineData.getDataSetByIndex(i) as! ILineChartDataSet!
             
             if !dataSet.isVisible || !dataSet.isDrawCirclesEnabled || dataSet.entryCount == 0
             {
@@ -495,8 +495,8 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
             let entryTo = dataSet.entryForXIndex(_maxX)!
             
             let diff = (entryFrom == entryTo) ? 1 : 0
-            let minx = max(dataSet.entryIndex(entry: entryFrom, isEqual: true) - diff, 0)
-            let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo, isEqual: true) + 1), entries.count)
+            let minx = max(dataSet.entryIndex(entry: entryFrom) - diff, 0)
+            let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo) + 1), entries.count)
             
             for (var j = minx, count = Int(ceil(CGFloat(maxx - minx) * phaseX + CGFloat(minx))); j < count; j++)
             {
@@ -550,7 +550,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
         
         for (var i = 0; i < indices.count; i++)
         {
-            guard let set = lineData.getDataSetByIndex(indices[i].dataSetIndex) as? LineChartDataSet else { continue }
+            guard let set = lineData.getDataSetByIndex(indices[i].dataSetIndex) as? ILineChartDataSet else { continue }
             
             if !set.isHighlightEnabled
             {

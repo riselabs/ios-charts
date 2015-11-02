@@ -16,7 +16,7 @@ import Foundation
 import CoreGraphics
 import UIKit
 
-public class PieChartDataSet: ChartDataSet
+public class PieChartDataSet: ChartDataSet, IPieChartDataSet
 {
     private var _sliceSpace = CGFloat(0.0)
     

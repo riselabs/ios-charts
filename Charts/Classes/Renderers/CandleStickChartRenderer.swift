@@ -30,7 +30,7 @@ public class CandleStickChartRenderer: LineScatterCandleRadarChartRenderer
     {
         guard let dataProvider = dataProvider, candleData = dataProvider.candleData else { return }
 
-        for set in candleData.dataSets as! [CandleChartDataSet]
+        for set in candleData.dataSets as! [ICandleChartDataSet]
         {
             if set.isVisible && set.entryCount > 0
             {
@@ -43,7 +43,7 @@ public class CandleStickChartRenderer: LineScatterCandleRadarChartRenderer
     private var _bodyRect = CGRect()
     private var _lineSegments = [CGPoint](count: 2, repeatedValue: CGPoint())
     
-    internal func drawDataSet(context context: CGContext, dataSet: CandleChartDataSet)
+    internal func drawDataSet(context context: CGContext, dataSet: ICandleChartDataSet)
     {
         guard let trans = dataProvider?.getTransformer(dataSet.axisDependency) else { return }
         
@@ -227,7 +227,7 @@ public class CandleStickChartRenderer: LineScatterCandleRadarChartRenderer
         {
             let xIndex = indices[i].xIndex; // get the x-position
             
-            let set = candleData.getDataSetByIndex(indices[i].dataSetIndex) as! CandleChartDataSet!
+            let set = candleData.getDataSetByIndex(indices[i].dataSetIndex) as! ICandleChartDataSet!
             
             if (set === nil || !set.isHighlightEnabled)
             {

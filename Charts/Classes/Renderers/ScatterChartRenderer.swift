@@ -36,14 +36,14 @@ public class ScatterChartRenderer: LineScatterCandleRadarChartRenderer
             
             if (set !== nil && set!.isVisible)
             {
-                drawDataSet(context: context, dataSet: set as! ScatterChartDataSet)
+                drawDataSet(context: context, dataSet: set as! IScatterChartDataSet)
             }
         }
     }
     
     private var _lineSegments = [CGPoint](count: 2, repeatedValue: CGPoint())
     
-    internal func drawDataSet(context context: CGContext, dataSet: ScatterChartDataSet)
+    internal func drawDataSet(context context: CGContext, dataSet: IScatterChartDataSet)
     {
         guard let dataProvider = dataProvider else { return }
         
@@ -162,7 +162,7 @@ public class ScatterChartRenderer: LineScatterCandleRadarChartRenderer
         // if values are drawn
         if (scatterData.yValCount < Int(ceil(CGFloat(dataProvider.maxVisibleValueCount) * viewPortHandler.scaleX)))
         {
-            var dataSets = scatterData.dataSets as! [ScatterChartDataSet]
+            var dataSets = scatterData.dataSets as! [IScatterChartDataSet]
             
             for (var i = 0; i < scatterData.dataSetCount; i++)
             {
@@ -226,7 +226,7 @@ public class ScatterChartRenderer: LineScatterCandleRadarChartRenderer
         
         for (var i = 0; i < indices.count; i++)
         {
-            guard let set = scatterData.getDataSetByIndex(indices[i].dataSetIndex) as? ScatterChartDataSet else { continue }
+            guard let set = scatterData.getDataSetByIndex(indices[i].dataSetIndex) as? IScatterChartDataSet else { continue }
             
             if !set.isHighlightEnabled
             {

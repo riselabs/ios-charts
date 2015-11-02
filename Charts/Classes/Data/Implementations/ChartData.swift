@@ -36,57 +36,57 @@ public class ChartData: NSObject
     private var _xValAverageLength = Double(0.0)
     
     internal var _xVals: [String?]!
-    internal var _dataSets: [ChartDataSet]!
+    internal var _dataSets: [IChartDataSet]!
     
     public override init()
     {
         super.init()
         
         _xVals = [String?]()
-        _dataSets = [ChartDataSet]()
+        _dataSets = [IChartDataSet]()
     }
     
-    public init(xVals: [String?]?, dataSets: [ChartDataSet]?)
+    public init(xVals: [String?]?, dataSets: [IChartDataSet]?)
     {
         super.init()
         
         _xVals = xVals == nil ? [String?]() : xVals
-        _dataSets = dataSets == nil ? [ChartDataSet]() : dataSets
+        _dataSets = dataSets == nil ? [IChartDataSet]() : dataSets
         
         self.initialize(_dataSets)
     }
     
-    public init(xVals: [NSObject]?, dataSets: [ChartDataSet]?)
+    public init(xVals: [NSObject]?, dataSets: [IChartDataSet]?)
     {
         super.init()
         
         _xVals = xVals == nil ? [String?]() : ChartUtils.bridgedObjCGetStringArray(objc: xVals!)
-        _dataSets = dataSets == nil ? [ChartDataSet]() : dataSets
+        _dataSets = dataSets == nil ? [IChartDataSet]() : dataSets
         
         self.initialize(_dataSets)
     }
     
     public convenience init(xVals: [String?]?)
     {
-        self.init(xVals: xVals, dataSets: [ChartDataSet]())
+        self.init(xVals: xVals, dataSets: [IChartDataSet]())
     }
     
     public convenience init(xVals: [NSObject]?)
     {
-        self.init(xVals: xVals, dataSets: [ChartDataSet]())
+        self.init(xVals: xVals, dataSets: [IChartDataSet]())
     }
     
-    public convenience init(xVals: [String?]?, dataSet: ChartDataSet?)
+    public convenience init(xVals: [String?]?, dataSet: IChartDataSet?)
     {
         self.init(xVals: xVals, dataSets: dataSet === nil ? nil : [dataSet!])
     }
     
-    public convenience init(xVals: [NSObject]?, dataSet: ChartDataSet?)
+    public convenience init(xVals: [NSObject]?, dataSet: IChartDataSet?)
     {
         self.init(xVals: xVals, dataSets: dataSet === nil ? nil : [dataSet!])
     }
     
-    internal func initialize(dataSets: [ChartDataSet])
+    internal func initialize(dataSets: [IChartDataSet])
     {
         checkIsLegal(dataSets)
         
@@ -118,7 +118,7 @@ public class ChartData: NSObject
     
     // Checks if the combination of x-values array and DataSet array is legal or not.
     // :param: dataSets
-    internal func checkIsLegal(dataSets: [ChartDataSet]!)
+    internal func checkIsLegal(dataSets: [IChartDataSet]!)
     {
         if (dataSets == nil)
         {
@@ -373,7 +373,7 @@ public class ChartData: NSObject
     }
     
     /// - returns: the array of ChartDataSets this object holds.
-    public var dataSets: [ChartDataSet]
+    public var dataSets: [IChartDataSet]
     {
         get
         {
@@ -468,7 +468,7 @@ public class ChartData: NSObject
     /// - parameter label:
     /// - parameter ignorecase:
     /// - returns: the DataSet Object with the given label. Sensitive or not.
-    public func getDataSetByLabel(label: String, ignorecase: Bool) -> ChartDataSet?
+    public func getDataSetByLabel(label: String, ignorecase: Bool) -> IChartDataSet?
     {
         let index = getDataSetIndexByLabel(label, ignorecase: ignorecase)
         
@@ -482,7 +482,7 @@ public class ChartData: NSObject
         }
     }
     
-    public func getDataSetByIndex(index: Int) -> ChartDataSet!
+    public func getDataSetByIndex(index: Int) -> IChartDataSet!
     {
         if (_dataSets == nil || index < 0 || index >= _dataSets.count)
         {
@@ -492,7 +492,7 @@ public class ChartData: NSObject
         return _dataSets[index]
     }
     
-    public func addDataSet(d: ChartDataSet!)
+    public func addDataSet(d: IChartDataSet!)
     {
         if (_dataSets == nil)
         {
@@ -558,7 +558,7 @@ public class ChartData: NSObject
         handleEmptyAxis(getFirstLeft(), firstRight: getFirstRight())
     }
     
-    public func handleEmptyAxis(firstLeft: ChartDataSet?, firstRight: ChartDataSet?)
+    public func handleEmptyAxis(firstLeft: IChartDataSet?, firstRight: IChartDataSet?)
     {
         // in case there is only one axis, adjust the second axis
         if (firstLeft === nil)
@@ -577,7 +577,7 @@ public class ChartData: NSObject
     /// Also recalculates all minimum and maximum values.
     ///
     /// - returns: true if a DataSet was removed, false if no DataSet could be removed.
-    public func removeDataSet(dataSet: ChartDataSet!) -> Bool
+    public func removeDataSet(dataSet: IChartDataSet!) -> Bool
     {
         if (_dataSets == nil || dataSet === nil)
         {
@@ -733,7 +733,7 @@ public class ChartData: NSObject
     }
     
     /// - returns: the DataSet that contains the provided Entry, or null, if no DataSet contains this entry.
-    public func getDataSetForEntry(e: ChartDataEntry!) -> ChartDataSet?
+    public func getDataSetForEntry(e: ChartDataEntry!) -> IChartDataSet?
     {
         if (e == nil)
         {
@@ -754,7 +754,7 @@ public class ChartData: NSObject
     }
     
     /// - returns: the index of the provided DataSet inside the DataSets array of this data object. -1 if the DataSet was not found.
-    public func indexOfDataSet(dataSet: ChartDataSet) -> Int
+    public func indexOfDataSet(dataSet: IChartDataSet) -> Int
     {
         for (var i = 0; i < _dataSets.count; i++)
         {
@@ -768,7 +768,7 @@ public class ChartData: NSObject
     }
     
     /// - returns: the first DataSet from the datasets-array that has it's dependency on the left axis. Returns null if no DataSet with left dependency could be found.
-    public func getFirstLeft() -> ChartDataSet?
+    public func getFirstLeft() -> IChartDataSet?
     {
         for dataSet in _dataSets
         {
@@ -782,7 +782,7 @@ public class ChartData: NSObject
     }
     
     /// - returns: the first DataSet from the datasets-array that has it's dependency on the right axis. Returns null if no DataSet with right dependency could be found.
-    public func getFirstRight() -> ChartDataSet?
+    public func getFirstRight() -> IChartDataSet?
     {
         for dataSet in _dataSets
         {
@@ -927,7 +927,7 @@ public class ChartData: NSObject
     
     /// Checks if this data object contains the specified DataSet. 
     /// - returns: true if so, false if not.
-    public func contains(dataSet dataSet: ChartDataSet) -> Bool
+    public func contains(dataSet dataSet: IChartDataSet) -> Bool
     {
         for set in dataSets
         {

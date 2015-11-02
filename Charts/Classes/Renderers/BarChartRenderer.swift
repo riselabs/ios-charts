@@ -36,12 +36,12 @@ public class BarChartRenderer: ChartDataRendererBase
             
             if set !== nil && set!.isVisible && set.entryCount > 0
             {
-                drawDataSet(context: context, dataSet: set as! BarChartDataSet, index: i)
+                drawDataSet(context: context, dataSet: set as! IBarChartDataSet, index: i)
             }
         }
     }
     
-    internal func drawDataSet(context context: CGContext, dataSet: BarChartDataSet, index: Int)
+    internal func drawDataSet(context context: CGContext, dataSet: IBarChartDataSet, index: Int)
     {
         guard let dataProvider = dataProvider, barData = dataProvider.barData else { return }
         

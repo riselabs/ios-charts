@@ -22,7 +22,7 @@ public class HorizontalBarChartRenderer: BarChartRenderer
         super.init(dataProvider: dataProvider, animator: animator, viewPortHandler: viewPortHandler)
     }
     
-    internal override func drawDataSet(context context: CGContext, dataSet: BarChartDataSet, index: Int)
+    internal override func drawDataSet(context context: CGContext, dataSet: IBarChartDataSet, index: Int)
     {
         guard let dataProvider = dataProvider, barData = dataProvider.barData else { return }
         
@@ -256,7 +256,7 @@ public class HorizontalBarChartRenderer: BarChartRenderer
             
             for (var i = 0, count = barData.dataSetCount; i < count; i++)
             {
-                let dataSet = dataSets[i] as! BarChartDataSet
+                let dataSet = dataSets[i] as! IBarChartDataSet
                 
                 if !dataSet.isDrawValuesEnabled || dataSet.entryCount == 0
                 {
