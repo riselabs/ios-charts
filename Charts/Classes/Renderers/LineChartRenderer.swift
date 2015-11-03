@@ -488,7 +488,7 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
             let circleRadius = dataSet.circleRadius
             let circleDiameter = circleRadius * 2.0
             let circleHoleDiameter = circleRadius
-            let circleHoleRadius = circleHoleDiameter / 2.0
+            let circleHoleRadius = circleHoleDiameter / 1.6
             let isDrawCircleHoleEnabled = dataSet.isDrawCircleHoleEnabled
             
             let entryFrom = dataSet.entryForXIndex(_minX)!
